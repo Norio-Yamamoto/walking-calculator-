@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Walking Independence Prediction Score | Post-Trochanteric Fracture Surgery</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      background: #F5F6F8;
+      color: #1a1a1a;
+      min-height: 100vh;
+      padding: 24px 16px 48px;
+    }
+
+    .page-header {
+      max-width: 640px;
+      margin: 0 auto 24px;
+    }
+    .page-header .tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      color: #185FA5;
+      background: #E6F1FB;
+      border-radius: 4px;
+      padding: 3px 10px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+    .page-header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #111;
+      line-height: 1.35;
+      margin-bottom: 6px;
+    }
+    .page-header p {
+      font-size: 13px;
+      color: #666;
+      line-height: 1.6;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      border: 1px solid #E5E7EB;
+      padding: 20px;
+      max-width: 640px;
+      margin: 0 auto 14px;
+    }
+
+    .predictor-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      color: #999;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .predictor-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: #111;
+      margin-bottom: 14px;
+      line-height: 1.4;
+    }
+
+    .radio-group { display: flex; flex-direction: column; gap: 8px; }
+
+    .radio-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 11px 14px;
+      border: 1.5px solid #E5E7EB;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      user-select: none;
+    }
+    .radio-row:hover { border-color: #93BBE0; background: #F5F9FE; }
+    .radio-row.selected { border-color: #185FA5; background: #EBF3FC; }
+
+    .radio-left { display: flex; align-items: center; gap: 10px; }
+    .radio-circle {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      border: 2px solid #CCC;
+      background: #fff;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .radio-row.selected .radio-circle { border-color: #185FA5; background: #185FA5; }
+    .radio-circle::after {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #fff;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .radio-row.selected .radio-circle::after { opacity: 1; }
+
+    .radio-text { font-size: 14px; color: #222; }
+    .radio-pts { font-size: 13px; font-weight: 600; color: #999; white-space: nowrap; }
+    .radio-row.selected .radio-pts { color: #185FA5; }
+
+    .slider-wrap { margin-top: 4px; }
+    .slider-row {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
+    }
+    .slider-row input[type=range] {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 4px;
+      background: #E5E7EB;
+      border-radius: 2px;
+      outline: none;
+    }
+    .slider-row input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: #185FA5;
+      cursor: pointer;
+      border: 2px solid #fff;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+    }
+    .slider-lim { font-size: 12px; color: #aaa; min-width: 20px; }
+    .slider-val-box {
+      min-width: 50px; text-align: center;
+      font-size: 24px; font-weight: 700; color: #111;
+    }
+    .pts-note { font-size: 13px; color: #888; }
+    .pts-note span { color: #185FA5; font-weight: 600; }
+
+    .result-card {
+      background: #fff;
+      border-radius: 14px;
+      border: 1.5px solid #E5E7EB;
+      padding: 22px 22px 20px;
+      max-width: 640px;
+      margin: 0 auto 14px;
+    }
+    .result-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px; }
+    .result-title { font-size: 12px; font-weight: 600; letter-spacing: 0.07em; color: #999; text-transform: uppercase; }
+    .result-pending { font-size: 13px; color: #aaa; }
+
+    .score-display { font-size: 52px; font-weight: 700; color: #111; line-height: 1; }
+    .score-unit { font-size: 14px; color: #999; margin-top: 2px; margin-bottom: 14px; }
+
+    .bar-track {
+      height: 8px; background: #ECEEF1; border-radius: 4px; overflow: hidden; margin-bottom: 14px;
+    }
+    .bar-fill { height: 100%; border-radius: 4px; width: 0; transition: width 0.4s ease, background 0.4s ease; }
+
+    .interp-text { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+    .interp-sub { font-size: 13px; color: #666; line-height: 1.55; }
+
+    .breakdown-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 8px; margin-top: 16px; padding-top: 14px;
+      border-top: 1px solid #F0F0F0;
+    }
+    .bd-cell { font-size: 13px; color: #888; }
+    .bd-cell strong { color: #333; font-weight: 600; }
+
+    .reset-btn {
+      display: block; width: 100%; max-width: 640px;
+      margin: 0 auto; padding: 12px;
+      font-size: 14px; color: #666;
+      background: #fff; border: 1px solid #DDD;
+      border-radius: 10px; cursor: pointer;
+      transition: background 0.15s;
+    }
+    .reset-btn:hover { background: #F5F5F5; }
+
+    .footer {
+      max-width: 640px; margin: 28px auto 0;
+      font-size: 12px; color: #aaa; line-height: 1.7; text-align: center;
+    }
+
+    @media (max-width: 480px) {
+      .score-display { font-size: 40px; }
+      .page-header h1 { font-size: 18px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="tag">Clinical Prediction Tool</div>
+  <h1>Walking Independence Prediction Score</h1>
+  <p>Post-trochanteric fracture surgery · Convalescent rehabilitation ward</p>
+</div>
+
+<!-- Predictor 1: Age -->
+<div class="card">
+  <div class="predictor-label">Predictor 1</div>
+  <div class="predictor-name">Age</div>
+  <div class="radio-group" id="age-group">
+    <div class="radio-row" data-val="3" onclick="selectRadio('age', this)">
+      <div class="radio-left">
+        <div class="radio-circle"></div>
+        <span class="radio-text">60–69 years</span>
+      </div>
+      <span class="radio-pts">+3 pts</span>
+    </div>
+    <div class="radio-row" data-val="2" onclick="selectRadio('age', this)">
+      <div class="radio-left">
+        <div class="radio-circle"></div>
+        <span class="radio-text">70–79 years</span>
+      </div>
+      <span class="radio-pts">+2 pts</span>
+    </div>
+    <div class="radio-row" data-val="1" onclick="selectRadio('age', this)">
+      <div class="radio-left">
+        <div class="radio-circle"></div>
+        <span class="radio-text">80–89 years</span>
+      </div>
+      <span class="radio-pts">+1 pt</span>
+    </div>
+    <div class="radio-row" data-val="0" onclick="selectRadio('age', this)">
+      <div class="radio-left">
+        <div class="radio-circle"></div>
+        <span class="radio-text">≥90 years</span>
+      </div>
+      <span class="radio-pts">+0 pts</span>
+    </div>
+  </div>
+</div>
+
+<!-- Predictor 2: Ambulatory status -->
+<div class="card">
+  <div class="predictor-label">Predictor 2</div>
+  <div class="predictor-name">Pre-injury ambulatory status</div>
+  <div class="radio-group" id="ambul-group">
+    <div class="radio-row" data-val="1" onclick="selectRadio('ambul', this)">
+      <div class="radio-left">
+        <div class="radio-circle"></div>
+        <span class="radio-text">Unaided walking</span>
+      </div>
+      <span class="radio-pts">+1 pt</span>
+    </div>
+    <div class="radio-row" data-val="0" onclick="selectRadio('ambul', this)">
+      <div class="radio-left">
+        <div class="radio-circle"></div>
+        <span class="radio-text">Walking with a single cane</span>
+      </div>
+      <span class="radio-pts">+0 pts</span>
+    </div>
+    <div class="radio-row" data-val="0" onclick="selectRadio('ambul', this)">
+      <div class="radio-left">
+        <div class="radio-circle"></div>
+        <span class="radio-text">Walker or environmental support</span>
+      </div>
+      <span class="radio-pts">+0 pts</span>
+    </div>
+  </div>
+</div>
+
+<!-- Predictor 3: BBS -->
+<div class="card">
+  <div class="predictor-label">Predictor 3</div>
+  <div class="predictor-name">Berg Balance Scale (BBS) score</div>
+  <div class="slider-wrap">
+    <div class="slider-row">
+      <span class="slider-lim">0</span>
+      <input type="range" min="0" max="56" step="1" value="0" id="bbs-slider" oninput="updateBBS(this.value)">
+      <span class="slider-lim">56</span>
+      <div class="slider-val-box" id="bbs-val">0</div>
+    </div>
+    <p class="pts-note">Points = BBS score ÷ 5 (rounded down) = <span id="bbs-pts">0</span> pts</p>
+  </div>
+</div>
+
+<!-- Predictor 4: CBA -->
+<div class="card">
+  <div class="predictor-label">Predictor 4</div>
+  <div class="predictor-name">Cognitive-related Behavioral Assessment (CBA) total score</div>
+  <div class="slider-wrap">
+    <div class="slider-row">
+      <span class="slider-lim">0</span>
+      <input type="range" min="0" max="30" step="1" value="0" id="cba-slider" oninput="updateCBA(this.value)">
+      <span class="slider-lim">30</span>
+      <div class="slider-val-box" id="cba-val">0</div>
+    </div>
+    <p class="pts-note">Points = CBA total score = <span id="cba-pts">0</span> pts</p>
+  </div>
+</div>
+
+<!-- Result -->
+<div class="result-card">
+  <div class="result-header">
+    <span class="result-title">Total Score</span>
+    <span class="result-pending" id="pending-msg">Please select age and ambulatory status</span>
+  </div>
+  <div class="score-display" id="score-display" style="display:none;"></div>
+  <div class="score-unit" id="score-unit" style="display:none;">points</div>
+  <div class="bar-track" id="bar-track" style="display:none;">
+    <div class="bar-fill" id="bar-fill"></div>
+  </div>
+  <div class="interp-text" id="interp-text"></div>
+  <div class="interp-sub" id="interp-sub"></div>
+  <div class="breakdown-grid" id="breakdown" style="display:none;">
+    <div class="bd-cell">Age: <strong id="bd-age">—</strong></div>
+    <div class="bd-cell">Ambulatory status: <strong id="bd-ambul">—</strong></div>
+    <div class="bd-cell">BBS: <strong id="bd-bbs">—</strong></div>
+    <div class="bd-cell">CBA: <strong id="bd-cba">—</strong></div>
+  </div>
+</div>
+
+<button class="reset-btn" onclick="resetAll()">↺ Reset all fields</button>
+
+<div class="footer">
+  <p>This tool is intended as a reference based on a clinically derived prediction model.</p>
+  <p>All final clinical decisions should be made by the responsible physician and rehabilitation team.</p>
+</div>
+
+<script>
+  const state = { age: null, ambul: null, bbs: 0, cba: 0 };
+
+  function selectRadio(group, el) {
+    const parent = document.getElementById(group + '-group');
+    parent.querySelectorAll('.radio-row').forEach(r => r.classList.remove('selected'));
+    el.classList.add('selected');
+    state[group] = parseInt(el.dataset.val);
+    updateScore();
+  }
+
+  function updateBBS(v) {
+    state.bbs = parseInt(v);
+    document.getElementById('bbs-val').textContent = v;
+    document.getElementById('bbs-pts').textContent = Math.floor(v / 5);
+    updateScore();
+  }
+
+  function updateCBA(v) {
+    state.cba = parseInt(v);
+    document.getElementById('cba-val').textContent = v;
+    document.getElementById('cba-pts').textContent = v;
+    updateScore();
+  }
+
+  function updateScore() {
+    if (state.age === null || state.ambul === null) {
+      document.getElementById('pending-msg').style.display = '';
+      document.getElementById('score-display').style.display = 'none';
+      document.getElementById('score-unit').style.display = 'none';
+      document.getElementById('bar-track').style.display = 'none';
+      document.getElementById('interp-text').textContent = '';
+      document.getElementById('interp-sub').textContent = '';
+      document.getElementById('breakdown').style.display = 'none';
+      return;
+    }
+
+    const bbsPts = Math.floor(state.bbs / 5);
+    const total = state.age + state.ambul + bbsPts + state.cba;
+    const maxScore = 3 + 1 + 11 + 30; // 45
+
+    document.getElementById('pending-msg').style.display = 'none';
+    document.getElementById('score-display').style.display = 'block';
+    document.getElementById('score-display').textContent = total;
+    document.getElementById('score-unit').style.display = 'block';
+    document.getElementById('bar-track').style.display = 'block';
+
+    const pct = Math.round((total / maxScore) * 100);
+    const bar = document.getElementById('bar-fill');
+    bar.style.width = pct + '%';
+
+    let color, interp, sub;
+    if (total <= 10) {
+      color = '#C0392B';
+      interp = 'Lower likelihood of walking independence';
+      sub = 'Intensive rehabilitation and multidisciplinary team intervention are recommended.';
+    } else if (total <= 20) {
+      color = '#D07000';
+      interp = 'Moderate likelihood of walking independence';
+      sub = 'Set clear rehabilitation goals and conduct regular reassessment throughout the admission.';
+    } else {
+      color = '#0F6E56';
+      interp = 'Higher likelihood of walking independence';
+      sub = 'Continue targeted rehabilitation with ambulation as the primary discharge goal.';
+    }
+
+    bar.style.background = color;
+    const interpEl = document.getElementById('interp-text');
+    interpEl.textContent = interp;
+    interpEl.style.color = color;
+    document.getElementById('interp-sub').textContent = sub;
+
+    document.getElementById('bd-age').textContent = state.age + ' pts';
+    document.getElementById('bd-ambul').textContent = state.ambul + ' pts';
+    document.getElementById('bd-bbs').textContent = bbsPts + ' pts';
+    document.getElementById('bd-cba').textContent = state.cba + ' pts';
+    document.getElementById('breakdown').style.display = 'grid';
+  }
+
+  function resetAll() {
+    state.age = null; state.ambul = null; state.bbs = 0; state.cba = 0;
+    document.querySelectorAll('.radio-row').forEach(r => r.classList.remove('selected'));
+    document.getElementById('bbs-slider').value = 0;
+    document.getElementById('bbs-val').textContent = '0';
+    document.getElementById('bbs-pts').textContent = '0';
+    document.getElementById('cba-slider').value = 0;
+    document.getElementById('cba-val').textContent = '0';
+    document.getElementById('cba-pts').textContent = '0';
+    document.getElementById('pending-msg').style.display = '';
+    document.getElementById('score-display').style.display = 'none';
+    document.getElementById('score-unit').style.display = 'none';
+    document.getElementById('bar-track').style.display = 'none';
+    document.getElementById('interp-text').textContent = '';
+    document.getElementById('interp-sub').textContent = '';
+    document.getElementById('breakdown').style.display = 'none';
+  }
+</script>
+</body>
+</html>
