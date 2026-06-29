@@ -163,6 +163,30 @@
     .interp-text { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
     .interp-sub { font-size: 13px; color: #666; line-height: 1.55; }
 
+    .prob-display {
+      margin-top: 16px; padding: 14px 16px;
+      background: #F8F9FB; border-radius: 10px;
+      border: 1px solid #E5E7EB;
+    }
+    .prob-label { font-size: 11px; font-weight: 600; letter-spacing: 0.07em; color: #999; text-transform: uppercase; margin-bottom: 6px; }
+    .prob-value { font-size: 36px; font-weight: 700; color: #111; line-height: 1; }
+    .prob-unit { font-size: 14px; color: #999; margin-top: 2px; }
+
+    .prob-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+    .prob-table th {
+      text-align: center; padding: 12px 10px;
+      background: #F3F4F6; color: #333; font-weight: 700;
+      border-bottom: 2px solid #E5E7EB; font-size: 16px;
+    }
+    .prob-table td {
+      text-align: center; padding: 12px 10px;
+      border-bottom: 1px solid #F0F0F0; color: #222; font-size: 20px; font-weight: 600;
+    }
+    .prob-table tr.active-row td {
+      background: #EBF3FC; color: #185FA5; font-weight: 700;
+    }
+    .prob-table tr:last-child td { border-bottom: none; }
+
     .breakdown-grid {
       display: grid; grid-template-columns: 1fr 1fr;
       gap: 8px; margin-top: 16px; padding-top: 14px;
@@ -308,12 +332,43 @@
   </div>
   <div class="interp-text" id="interp-text"></div>
   <div class="interp-sub" id="interp-sub"></div>
+
+  <div class="prob-display" id="prob-display" style="display:none;">
+    <div class="prob-label">Predicted probability of walking independence at discharge</div>
+    <div class="prob-value" id="prob-value">—</div>
+    <div class="prob-unit">%</div>
+  </div>
+
   <div class="breakdown-grid" id="breakdown" style="display:none;">
     <div class="bd-cell">Age: <strong id="bd-age">—</strong></div>
     <div class="bd-cell">Ambulatory status: <strong id="bd-ambul">—</strong></div>
     <div class="bd-cell">BBS: <strong id="bd-bbs">—</strong></div>
     <div class="bd-cell">CBA: <strong id="bd-cba">—</strong></div>
   </div>
+</div>
+
+<!-- Probability reference table -->
+<div class="card" id="prob-table-card">
+  <div class="predictor-label">Reference Table</div>
+  <div class="predictor-name" style="margin-bottom:12px;">Predicted probability of walking independence at discharge</div>
+  <table class="prob-table" id="prob-table">
+    <thead>
+      <tr>
+        <th>Total Score</th>
+        <th>Predicted Probability (%)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr data-min="6"  data-max="10"><td>6–10</td><td>0.4</td></tr>
+      <tr data-min="11" data-max="15"><td>11–15</td><td>1.2</td></tr>
+      <tr data-min="16" data-max="20"><td>16–20</td><td>8.0</td></tr>
+      <tr data-min="21" data-max="25"><td>21–25</td><td>27.3</td></tr>
+      <tr data-min="26" data-max="30"><td>26–30</td><td>56.8</td></tr>
+      <tr data-min="31" data-max="35"><td>31–35</td><td>86.6</td></tr>
+      <tr data-min="36" data-max="40"><td>36–40</td><td>96.1</td></tr>
+      <tr data-min="41" data-max="45"><td>41–45</td><td>98.8</td></tr>
+    </tbody>
+  </table>
 </div>
 
 <button class="reset-btn" onclick="resetAll()">↺ Reset all fields</button>
@@ -395,6 +450,35 @@
     interpEl.style.color = color;
     document.getElementById('interp-sub').textContent = sub;
 
+    // Predicted probability lookup
+    const probMap = [
+      { min: 6,  max: 10, prob: '0.4'  },
+      { min: 11, max: 15, prob: '1.2'  },
+      { min: 16, max: 20, prob: '8.0'  },
+      { min: 21, max: 25, prob: '27.3' },
+      { min: 26, max: 30, prob: '56.8' },
+      { min: 31, max: 35, prob: '86.6' },
+      { min: 36, max: 40, prob: '96.1' },
+      { min: 41, max: 45, prob: '98.8' },
+    ];
+    const match = probMap.find(r => total >= r.min && total <= r.max);
+    const probDisplay = document.getElementById('prob-display');
+    const probValue = document.getElementById('prob-value');
+    if (match) {
+      probValue.textContent = match.prob;
+      probValue.style.color = color;
+      probDisplay.style.display = 'block';
+    } else {
+      probDisplay.style.display = 'none';
+    }
+
+    // Highlight active row in reference table
+    document.querySelectorAll('#prob-table tbody tr').forEach(tr => {
+      const tmin = parseInt(tr.dataset.min);
+      const tmax = parseInt(tr.dataset.max);
+      tr.classList.toggle('active-row', total >= tmin && total <= tmax);
+    });
+
     document.getElementById('bd-age').textContent = state.age + ' pts';
     document.getElementById('bd-ambul').textContent = state.ambul + ' pts';
     document.getElementById('bd-bbs').textContent = bbsPts + ' pts';
@@ -418,6 +502,8 @@
     document.getElementById('interp-text').textContent = '';
     document.getElementById('interp-sub').textContent = '';
     document.getElementById('breakdown').style.display = 'none';
+    document.getElementById('prob-display').style.display = 'none';
+    document.querySelectorAll('#prob-table tbody tr').forEach(tr => tr.classList.remove('active-row'));
   }
 </script>
 </body>
