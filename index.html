@@ -91,30 +91,28 @@
       border-bottom: 1px solid #E5EDF5;
     }
     .bbs-scoring-note strong { color: #111; }
-    .bbs-item-grid {
-      display: grid; grid-template-columns: 28px 1fr auto;
-      gap: 0;
-    }
+    .bbs-item-grid { display: flex; flex-direction: column; gap: 0; }
     .bbs-item-row {
-      display: contents;
+      padding: 12px 14px; border-bottom: 1px solid #EEF2F6;
     }
-    .bbs-item-row > * {
-      padding: 8px 10px; border-bottom: 1px solid #EEF2F6; font-size: 13px;
-    }
-    .bbs-item-row:last-child > * { border-bottom: none; }
-    .bbs-num { color: #999; font-weight: 600; text-align: center; background: #F3F6FA; }
-    .bbs-task { color: #333; }
-    .bbs-sel {
-      display: flex; gap: 4px; align-items: center; justify-content: flex-end;
-    }
+    .bbs-item-row:last-child { border-bottom: none; }
+    .bbs-item-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px; }
+    .bbs-num { color: #fff; font-weight: 700; font-size: 11px; background: #93A6BD; border-radius: 5px; padding: 2px 6px; flex-shrink: 0; }
+    .bbs-task { color: #111; font-weight: 600; font-size: 14px; }
+    .bbs-sel { display: flex; gap: 4px; margin-bottom: 8px; }
     .bbs-btn {
-      width: 28px; height: 28px; border-radius: 6px; border: 1.5px solid #D0D8E4;
-      background: #fff; font-size: 12px; font-weight: 700; color: #555;
+      flex: 1; padding: 5px 2px; border-radius: 6px; border: 1.5px solid #D0D8E4;
+      background: #fff; font-size: 11px; font-weight: 700; color: #555;
       cursor: pointer; transition: background 0.12s, border-color 0.12s;
       display: flex; align-items: center; justify-content: center;
     }
     .bbs-btn:hover { background: #E6F1FB; border-color: #93BBE0; }
     .bbs-btn.active { background: #185FA5; border-color: #185FA5; color: #fff; }
+    .bbs-item-def {
+      font-size: 12px; color: #444; line-height: 1.55;
+      background: #F4F8FC; border: 1px solid #DCE7F2; border-radius: 8px; padding: 9px 11px;
+    }
+    .bbs-item-def strong { color: #185FA5; }
     .bbs-total-row {
       display: flex; align-items: center; justify-content: space-between;
       padding: 11px 14px; background: #EBF3FC; border-top: 1.5px solid #C0D9F0;
@@ -137,22 +135,28 @@
     .cba-score-legend strong { color: #111; }
     .cba-domain-grid { display: flex; flex-direction: column; gap: 0; }
     .cba-domain-row {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 9px 14px; border-bottom: 1px solid #EEF2F6;
+      padding: 12px 14px; border-bottom: 1px solid #EEF2F6;
     }
     .cba-domain-row:last-child { border-bottom: none; }
-    .cba-domain-info { flex: 1; }
+    .cba-domain-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
     .cba-domain-name { font-size: 14px; font-weight: 600; color: #111; }
-    .cba-domain-desc { font-size: 11px; color: #888; margin-top: 2px; line-height: 1.4; }
-    .cba-btns { display: flex; gap: 4px; }
+    .cba-domain-points { font-size: 11px; color: #888; }
+    .cba-btns { display: flex; gap: 4px; margin-bottom: 8px; }
     .cba-btn {
-      width: 30px; height: 30px; border-radius: 6px; border: 1.5px solid #D0D8E4;
-      background: #fff; font-size: 12px; font-weight: 700; color: #555;
+      flex: 1; padding: 5px 2px; border-radius: 6px; border: 1.5px solid #D0D8E4;
+      background: #fff; font-size: 11px; font-weight: 700; color: #555;
       cursor: pointer; transition: background 0.12s, border-color 0.12s;
-      display: flex; align-items: center; justify-content: center;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.3;
     }
+    .cba-btn .num { font-size: 13px; font-weight: 700; }
+    .cba-btn .lbl { font-size: 9px; font-weight: 500; margin-top: 1px; }
     .cba-btn:hover { background: #E6F1FB; border-color: #93BBE0; }
     .cba-btn.active { background: #185FA5; border-color: #185FA5; color: #fff; }
+    .cba-domain-def {
+      font-size: 12px; color: #444; line-height: 1.55;
+      background: #F4F8FC; border: 1px solid #DCE7F2; border-radius: 8px; padding: 9px 11px;
+    }
+    .cba-domain-def strong { color: #185FA5; }
     .cba-total-row {
       display: flex; align-items: center; justify-content: space-between;
       padding: 11px 14px; background: #EBF3FC; border-top: 1.5px solid #C0D9F0;
@@ -285,12 +289,7 @@
   </div>
   <div class="helper-box" id="bbs-helper">
     <div class="bbs-scoring-note">
-      <strong>Scoring guide:</strong> For each item, select the score that best describes the patient's performance.<br>
-      <strong>4</strong> = Performs safely and independently &nbsp;|&nbsp;
-      <strong>3</strong> = Independent but slightly reduced time/distance/stability &nbsp;|&nbsp;
-      <strong>2</strong> = Needs supervision or minor assistance &nbsp;|&nbsp;
-      <strong>1</strong> = Needs considerable assistance &nbsp;|&nbsp;
-      <strong>0</strong> = Unable to perform safely
+      <strong>Scoring guide:</strong> For each item, select the score (0–4) that best matches the patient's performance, based on the definitions shown below.
     </div>
     <div class="bbs-item-grid" id="bbs-item-grid"></div>
     <div class="bbs-total-row">
@@ -322,12 +321,7 @@
   </div>
   <div class="helper-box" id="cba-helper">
     <div class="cba-score-legend">
-      <strong>Scoring guide:</strong> For each domain, select the score that best describes the patient.<br>
-      <strong>5</strong> = Normal &nbsp;|&nbsp;
-      <strong>4</strong> = Mild impairment &nbsp;|&nbsp;
-      <strong>3</strong> = Moderate impairment &nbsp;|&nbsp;
-      <strong>2</strong> = Severe impairment &nbsp;|&nbsp;
-      <strong>1</strong> = Most severe impairment
+      <strong>Scoring guide:</strong> For each domain, select the score (5 Normal – 1 Most Severe) that best matches the patient, based on the definitions shown below.
     </div>
     <div class="cba-domain-grid" id="cba-domain-grid"></div>
     <div class="cba-total-row">
@@ -410,41 +404,204 @@
 <script>
   const state = { age: null, ambul: null, bbs: 0, cba: 6 };
 
-  // ---- BBS items ----
+  // ---- BBS items (standard official Berg Balance Scale criteria) ----
   const bbsItems = [
-    'Sitting to standing', 'Standing unsupported', 'Sitting unsupported',
-    'Standing to sitting', 'Transfers', 'Standing with eyes closed',
-    'Standing with feet together', 'Reaching forward with outstretched arm',
-    'Retrieving object from floor', 'Turning to look behind',
-    'Turning 360 degrees', 'Placing alternate foot on stool',
-    'Standing with one foot in front', 'Standing on one foot'
+    {
+      task: 'Sitting to standing',
+      instruction: 'Please stand up. Try not to use your hand for support.',
+      levels: {
+        4: 'Able to stand without using hands and stabilize independently.',
+        3: 'Able to stand independently using hands.',
+        2: 'Able to stand using hands after several tries.',
+        1: 'Needs minimal aid to stand or to stabilize.',
+        0: 'Needs moderate or maximal assist to stand.'
+      }
+    },
+    {
+      task: 'Standing unsupported',
+      instruction: 'Please stand for 2 minutes without holding on.',
+      levels: {
+        4: 'Able to stand safely for 2 minutes.',
+        3: 'Able to stand 2 minutes with supervision.',
+        2: 'Able to stand 30 seconds unsupported.',
+        1: 'Needs several tries to stand 30 seconds unsupported.',
+        0: 'Unable to stand 30 seconds unassisted.'
+      }
+    },
+    {
+      task: 'Sitting unsupported, feet on floor',
+      instruction: 'Please sit with arms folded for 2 minutes.',
+      levels: {
+        4: 'Able to sit safely and securely for 2 minutes.',
+        3: 'Able to sit 2 minutes under supervision.',
+        2: 'Able to sit 30 seconds.',
+        1: 'Able to sit 10 seconds.',
+        0: 'Unable to sit without support 10 seconds.'
+      }
+    },
+    {
+      task: 'Standing to sitting',
+      instruction: 'Please sit down.',
+      levels: {
+        4: 'Sits safely with minimal use of hands.',
+        3: 'Controls descent by using hands.',
+        2: 'Uses back of legs against chair to control descent.',
+        1: 'Sits independently but has uncontrolled descent.',
+        0: 'Needs assistance to sit.'
+      }
+    },
+    {
+      task: 'Transfers',
+      instruction: 'Arrange chair(s) for a pivot transfer. Ask the patient to transfer one way toward a seat with armrests and one way toward a seat without armrests.',
+      levels: {
+        4: 'Able to transfer safely with minor use of hands.',
+        3: 'Able to transfer safely, definite need of hands.',
+        2: 'Able to transfer with verbal cueing and/or supervision.',
+        1: 'Needs one person to assist.',
+        0: 'Needs two people to assist or supervise to be safe.'
+      }
+    },
+    {
+      task: 'Standing unsupported with eyes closed',
+      instruction: 'Please close your eyes and stand still for 10 seconds.',
+      levels: {
+        4: 'Able to stand 10 seconds safely.',
+        3: 'Able to stand 10 seconds with supervision.',
+        2: 'Able to stand 3 seconds.',
+        1: 'Unable to keep eyes closed 3 seconds but stays steady.',
+        0: 'Needs help to keep from falling.'
+      }
+    },
+    {
+      task: 'Standing unsupported with feet together',
+      instruction: 'Place your feet together and stand without holding on.',
+      levels: {
+        4: 'Able to place feet together independently and stand 1 minute safely.',
+        3: 'Able to place feet together independently and stand 1 minute with supervision.',
+        2: 'Able to place feet together independently but unable to hold for 30 seconds.',
+        1: 'Needs help to attain position but able to stand 15 seconds feet together.',
+        0: 'Needs help to attain position and unable to hold for 15 seconds.'
+      }
+    },
+    {
+      task: 'Reaching forward with outstretched arm while standing',
+      instruction: 'Lift the arm to 90°. Stretch out your fingers and reach as far forward as you can. (The examiner places a ruler at the end of the fingertips when the arm is at 90°. Fingers should not touch the ruler while reaching forward. Record the distance reached.)',
+      levels: {
+        4: 'Can reach forward confidently more than 25 cm (10 in).',
+        3: 'Can reach forward more than 12 cm (5 in) safely.',
+        2: 'Can reach forward more than 5 cm (2 in) safely.',
+        1: 'Reaches forward but needs supervision.',
+        0: 'Loses balance while trying / requires external support.'
+      }
+    },
+    {
+      task: 'Pick up object from the floor',
+      instruction: 'Pick up the object (e.g. shoe/slipper) placed in front of your feet.',
+      levels: {
+        4: 'Able to pick up the slipper safely and easily.',
+        3: 'Able to pick up the slipper but needs supervision.',
+        2: 'Unable to pick up but reaches 2-5 cm from slipper and keeps balance independently.',
+        1: 'Unable to pick up and needs supervision while trying.',
+        0: 'Unable to try / needs assist to keep from losing balance or falling.'
+      }
+    },
+    {
+      task: 'Turning to look behind over left and right shoulders while standing',
+      instruction: 'Turn to look directly behind you over your left shoulder, then repeat to the right.',
+      levels: {
+        4: 'Looks behind from both sides and weight shifts well.',
+        3: 'Looks behind one side only, other side shows less weight shift.',
+        2: 'Turns sideways only but maintains balance.',
+        1: 'Needs supervision when turning.',
+        0: 'Needs assist to keep from losing balance or falling.'
+      }
+    },
+    {
+      task: 'Turn 360 degrees',
+      instruction: 'Turn completely around in a full circle. Pause. Then turn a full circle in the other direction.',
+      levels: {
+        4: 'Able to turn 360° safely in 4 seconds or less, both directions.',
+        3: 'Able to turn 360° safely one side only in 4 seconds or less.',
+        2: 'Able to turn 360° safely but slowly.',
+        1: 'Needs close supervision or verbal cueing.',
+        0: 'Needs assistance while turning.'
+      }
+    },
+    {
+      task: 'Placing alternate foot on stool while standing unsupported',
+      instruction: 'Place each foot alternately on the stool/step. Continue until each foot has touched the stool four times.',
+      levels: {
+        4: 'Able to stand independently and safely and complete 8 steps in 20 seconds.',
+        3: 'Able to stand independently and complete 8 steps in more than 20 seconds.',
+        2: 'Able to complete 4 steps without aid with supervision.',
+        1: 'Able to complete more than 2 steps, needs minimal assistance.',
+        0: 'Needs assistance to keep from falling / unable to try.'
+      }
+    },
+    {
+      task: 'Standing unsupported, one foot in front',
+      instruction: 'Place one foot directly in front of the other (tandem). If unable, try stepping far enough that the heel of the forward foot is ahead of the toes of the other foot.',
+      levels: {
+        4: 'Able to place foot tandem independently and hold 30 seconds.',
+        3: 'Able to place foot ahead independently and hold 30 seconds.',
+        2: 'Able to take small step independently and hold 30 seconds.',
+        1: 'Needs help to step but can hold 15 seconds.',
+        0: 'Loses balance while stepping or standing.'
+      }
+    },
+    {
+      task: 'Standing on one leg',
+      instruction: 'Stand on one leg as long as you can without holding on.',
+      levels: {
+        4: 'Able to lift leg independently and hold more than 10 seconds.',
+        3: 'Able to lift leg independently and hold 5-10 seconds.',
+        2: 'Able to lift leg independently and hold 3 seconds or more.',
+        1: 'Tries to lift leg, unable to hold 3 seconds, but remains standing independently.',
+        0: 'Unable to try / needs assist to prevent fall.'
+      }
+    },
   ];
   const bbsScores = new Array(14).fill(0);
 
   function buildBBSHelper() {
     const grid = document.getElementById('bbs-item-grid');
-    bbsItems.forEach((task, i) => {
+    bbsItems.forEach((item, i) => {
       const row = document.createElement('div');
       row.className = 'bbs-item-row';
-      const num = document.createElement('div');
-      num.className = 'bbs-num'; num.textContent = i + 1;
-      const label = document.createElement('div');
-      label.className = 'bbs-task'; label.textContent = task;
-      const sel = document.createElement('div');
-      sel.className = 'bbs-sel';
-      [0,1,2,3,4].forEach(v => {
+
+      const head = document.createElement('div');
+      head.className = 'bbs-item-head';
+      head.innerHTML = '<span class="bbs-num">' + (i + 1) + '</span>' +
+        '<span class="bbs-task">' + item.task + '</span>';
+
+      const btns = document.createElement('div');
+      btns.className = 'bbs-sel';
+
+      const defBox = document.createElement('div');
+      defBox.className = 'bbs-item-def';
+
+      function renderDef(v) {
+        defBox.innerHTML = '<strong>' + v + ':</strong> ' + item.levels[v];
+      }
+
+      [4,3,2,1,0].forEach(v => {
         const btn = document.createElement('button');
         btn.className = 'bbs-btn'; btn.textContent = v;
         if (v === 0) btn.classList.add('active');
         btn.onclick = () => {
-          sel.querySelectorAll('.bbs-btn').forEach(b => b.classList.remove('active'));
+          btns.querySelectorAll('.bbs-btn').forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
           bbsScores[i] = v;
+          renderDef(v);
           updateBBSHelperTotal();
         };
-        sel.appendChild(btn);
+        btns.appendChild(btn);
       });
-      row.appendChild(num); row.appendChild(label); row.appendChild(sel);
+
+      renderDef(0);
+      row.appendChild(head);
+      row.appendChild(btns);
+      row.appendChild(defBox);
       grid.appendChild(row);
     });
     updateBBSHelperTotal();
@@ -462,14 +619,74 @@
     toggleHelper('bbs'); // close after applying
   }
 
-  // ---- CBA domains ----
+  // ---- CBA domains (definitions from Morita et al. 2014) ----
   const cbaDomains = [
-    { name: 'Consciousness', desc: 'Level of arousal and ability to maintain alertness in daily activities' },
-    { name: 'Emotion',       desc: 'Emotional stability and appropriateness of emotional responses' },
-    { name: 'Attention',     desc: 'Ability to sustain and shift attention during daily activities' },
-    { name: 'Memory',        desc: 'Ability to remember information and events relevant to daily activities' },
-    { name: 'Judgment',      desc: 'Ability to make appropriate decisions and solve problems in daily situations' },
-    { name: 'Awareness of illness', desc: 'Awareness of one\'s own condition, impairments, and need for support' },
+    {
+      name: 'Consciousness',
+      points: ['Eye-opening, awareness', 'Response to stimuli', 'Ease of thinking fatigue'],
+      levels: {
+        5: 'Stable condition with a normal, energetic rhythm of life. Does not show fatigue or decreased responsiveness to thinking or speaking and has sufficient energy to sustain it.',
+        4: 'Eyes are open during the day, but sometimes vision is blurred. Does not show fatigue in familiar situations but shows decreased responsiveness in novel situations.',
+        3: 'Eyes are open during the day, but facial expression is often blurred. Easily fatigued by thinking or speaking and shows a marked decrease in responsiveness during the process.',
+        2: 'Tendency of occasional somnolence during the day. Fatigued easily when he/she thinks or talks and cannot sustain mental energy.',
+        1: 'Tendency to be somnolent in the absence of daytime stimulation.'
+      }
+    },
+    {
+      name: 'Emotion',
+      points: ['Initiative', 'Sorrow and pleasure', 'Emotional control'],
+      levels: {
+        5: 'Willing and eager to try new activities. Shows age-appropriate emotional expression and is able to control his/her emotions according to the situation.',
+        4: 'Performs habitual activities on his/her own but is unwilling to try new activities. Alternatively, may show a mild tendency toward fixation, impulsivity, anger, depression, dependence, and regression.',
+        3: 'May require instruction or prompting to perform daily activities. Alternatively, the tendency to fixation, impulsivity, irritability, depression, dependence, or regression is observed.',
+        2: 'May not initiate daily activities on his/her own and may not do so even when encouraged to do so. Alternatively, shows strong symptoms of fixation, impulsivity, irritability, depression, dependence, and regression.',
+        1: 'Lacks the motivation to do anything and, therefore, requires assistance with personal care. Rarely able to express feelings of joy, anger, or sadness, or only expresses reactions of pleasure or displeasure.'
+      }
+    },
+    {
+      name: 'Attention',
+      points: ['Attention selection', 'Sustained attention distribution and control'],
+      levels: {
+        5: 'Able to perform two or more tasks simultaneously with no apparent performance decrement. Can respond appropriately to the presentation of other stimuli during the task and can return to the original task spontaneously.',
+        4: 'Has a slight performance deficit when performing two tasks at the same time. Tends to hyperconcentrate and does not respond immediately to other stimuli. May require prompting to return to the original task.',
+        3: 'Tends to become more distracted the more interferences they receive. Can complete a task to the end or sustain it for about 30 min, but reaction time slows down and errors increase during the process.',
+        2: 'Unable to direct attention to the required object when other interfering stimuli are present. Alternatively, interrupts one task too soon and is unable to sustain it.',
+        1: 'Hardly able to pay attention to the necessary stimuli.'
+      }
+    },
+    {
+      name: 'Memory',
+      points: ['Ability to remember things in daily life', 'Scheduled memory'],
+      levels: {
+        5: 'Generally accurate in recalling events from 2 to 3 days ago. A new recall of events from several weeks ago is generally possible. Forgetting appointments and commitments is rare and not a problem.',
+        4: 'Generally accurate in recalling events of the day but is uncertain about details of events 2 or 3 days prior. Occasionally forgets plans or appointments and makes mistakes.',
+        3: 'Able to recall some of the events of the day accurately and is ambiguous about details, such as incorrect person, place, or time. Often forgets appointments and commitments.',
+        2: 'Has little or no recall of the events of the day. Or, completely unable to remember appointments and commitments and requires constant prompting.',
+        1: 'Has little or no recall of events that occurred several hours ago. Often makes up stories and has obvious memory confusion.'
+      }
+    },
+    {
+      name: 'Judgment',
+      points: ['Decision-making and problem-solving skills that take into account long-term impacts'],
+      levels: {
+        5: 'Able to make decisions and solve problems taking into account long-term projection and social relationships several years later.',
+        4: 'Able to make decisions with some degree of foresight into the near future but admits a tendency toward egocentricity or dependence on others.',
+        3: 'Has a scene-dependent or short-sighted (immediate benefit first) problem-solving approach.',
+        2: 'Often relies on immediate emotional problem-solving.',
+        1: 'Often engages in object-dependent problem-solving.'
+      }
+    },
+    {
+      name: 'Consciousness of disease (Awareness of illness)',
+      points: ['Understanding of diseases, disabilities, and abilities', 'Understanding of seriousness and utilization of surviving capacity', 'Environmental adaptation'],
+      levels: {
+        5: 'Well aware of his/her illnesses, disabilities, and abilities, and can effectively use his/her remaining abilities and adapts to changes in the environment with his/her ingenuity.',
+        4: 'Generally aware of his/her illness, disability, abilities, and seriousness of the illness. However, compared to the pre-symptomatic state, has a clearly reduced range of social activities and is unable to fully use remaining abilities.',
+        3: 'Has a general awareness of his/her illness, disability, and abilities, but it is not serious. Therefore, adaptable only in a well-organized environment.',
+        2: 'Has only a rough perception of his/her disease or disability but not of abilities. Therefore, even in a well-developed environment, requires the efforts of the people around him/her.',
+        1: 'Completely unaware of his/her disease, disability, and abilities. Unable to use residual abilities and is unable to adapt to the environment without the full support of those around him/her.'
+      }
+    },
   ];
   const cbaScores = new Array(6).fill(1);
 
@@ -478,24 +695,43 @@
     cbaDomains.forEach((domain, i) => {
       const row = document.createElement('div');
       row.className = 'cba-domain-row';
-      const info = document.createElement('div');
-      info.className = 'cba-domain-info';
-      info.innerHTML = '<div class="cba-domain-name">' + domain.name + '</div><div class="cba-domain-desc">' + domain.desc + '</div>';
+
+      const head = document.createElement('div');
+      head.className = 'cba-domain-head';
+      head.innerHTML = '<div class="cba-domain-name">' + domain.name + '</div>' +
+        '<div class="cba-domain-points">' + domain.points.join(' · ') + '</div>';
+
       const btns = document.createElement('div');
       btns.className = 'cba-btns';
-      [1,2,3,4,5].forEach(v => {
+
+      const defBox = document.createElement('div');
+      defBox.className = 'cba-domain-def';
+
+      const labels = { 5: 'Normal', 4: 'Mild', 3: 'Moderate', 2: 'Severe', 1: 'Most Severe' };
+
+      function renderDef(v) {
+        defBox.innerHTML = '<strong>' + v + ' ' + labels[v] + ':</strong> ' + domain.levels[v];
+      }
+
+      [5,4,3,2,1].forEach(v => {
         const btn = document.createElement('button');
-        btn.className = 'cba-btn'; btn.textContent = v;
+        btn.className = 'cba-btn';
+        btn.innerHTML = '<span class="num">' + v + '</span><span class="lbl">' + labels[v] + '</span>';
         if (v === 1) btn.classList.add('active');
         btn.onclick = () => {
           btns.querySelectorAll('.cba-btn').forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
           cbaScores[i] = v;
+          renderDef(v);
           updateCBAHelperTotal();
         };
         btns.appendChild(btn);
       });
-      row.appendChild(info); row.appendChild(btns);
+
+      renderDef(1);
+      row.appendChild(head);
+      row.appendChild(btns);
+      row.appendChild(defBox);
       grid.appendChild(row);
     });
     updateCBAHelperTotal();
@@ -637,16 +873,12 @@
     document.querySelectorAll('#prob-table tbody tr').forEach(tr => tr.classList.remove('active-row'));
     // reset BBS helper
     bbsScores.fill(0);
-    document.querySelectorAll('.bbs-btn').forEach(btn => {
-      btn.classList.toggle('active', btn.textContent === '0');
-    });
-    updateBBSHelperTotal();
+    document.getElementById('bbs-item-grid').innerHTML = '';
+    buildBBSHelper();
     // reset CBA helper
     cbaScores.fill(1);
-    document.querySelectorAll('.cba-btn').forEach(btn => {
-      btn.classList.toggle('active', btn.textContent === '1');
-    });
-    updateCBAHelperTotal();
+    document.getElementById('cba-domain-grid').innerHTML = '';
+    buildCBAHelper();
   }
 
   // Build helpers on load
